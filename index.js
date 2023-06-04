@@ -1,22 +1,25 @@
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
-const app =express()
-const process = require('process')
-const PORT=3500
-const students =require('./routes/students');
-const studentModel =require('./models/students')
-const  mongoose  = require('mongoose');
+const app = express();
+const studentRouter = require('./routes/students');
+const PORT = process.env.PORT;
+const mongoose = require('mongoose');
 
-mongoose.connect(process.env.DB_URL)
-const db =mongoose.connection()
-db.on('error',(err )=> console.log(err))
-db.once('open',()=>console.log('connection established'))
 
-app.get('/',(req,res)=>{
-  res.send("welcome to student entrolment")
-})
+mongoose.connect(process.env.MONGODB_URL);
 
-app.use('/api/v1/students',students)
-app.use('/api/v1/studentModel',studentModel)
+const db = mongoose.connection;
+db.on('error', errorMessage => console.log(errorMessage));
+db.once('open', () => console.log('Connection Established'));
 
-app.listen(PORT,console.log("server start"))
+app.use(express.json()); 
+
+app.get('/', (req, res) => {
+  res.send('Hello world');
+});
+
+app.use('/api/v1/students', studentRouter);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}/`);
+});
